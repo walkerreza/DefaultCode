@@ -1,0 +1,48 @@
+name: Commit Now (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email commit'
+        required: true
+        default: 'rezawalker02@gmail.com'
+      username:
+        description: 'komit auto'
+        required: true
+        default: 'walkerreza'
+      message:
+        description: 'Pesan autp'
+        required: true
+        default: 'Auto commit'
+      limit:
+        description: 'Jumlah auto commit'
+        required: true
+        default: 5
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "${{ github.event.inputs.email }}"
+          git config --local user.name "${{ github.event.inputs.username }}"
+
+      - name: Auto Commit
+        run: |
+          for i in $(seq 1 ${{ github.event.inputs.limit }})
+          do
+            echo "$(date -u)" > LAST_UPDATED
+            git add LAST_UPDATED
+            git commit -m "${{ github.event.inputs.message }} #$i"
+          done
+
+      - name: Push to GitHub
+        run: |
+          git push
