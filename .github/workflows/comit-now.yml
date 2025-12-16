@@ -1,11 +1,11 @@
-name: Auto Commit (10x Daily)
+name: Auto Commit (Random Daily)
 
 permissions:
   contents: write
 
 on:
   schedule:
-    - cron: "0 1,3,5,7,9,11,13,15,17,19 * * *"
+    - cron: "0 18 * * *"   # 01.00 WIB setiap hari
   workflow_dispatch:
 
 jobs:
@@ -21,14 +21,23 @@ jobs:
           git config --local user.email "rezawalker02@gmail.com"
           git config --local user.name "walkerreza"
 
-      - name: Update file
+      - name: Generate random commit count
+        id: random
         run: |
-          echo "Update at $(date -u)" > LAST_UPDATED
+          MIN=10
+          MAX=14
+          COUNT=$((RANDOM % (MAX - MIN + 1) + MIN))
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          echo "Today will commit $COUNT times"
 
-      - name: Commit
+      - name: Auto Commit Loop
         run: |
-          git add LAST_UPDATED
-          git commit -m "Penghijauan" || echo "No changes"
+          for i in $(seq 1 ${{ steps.random.outputs.count }})
+          do
+            echo "Commit $i at $(date -u)" > LAST_UPDATED
+            git add LAST_UPDATED
+            git commit -m "Penghijauan #$i"
+          done
 
       - name: Push
         run: git push
