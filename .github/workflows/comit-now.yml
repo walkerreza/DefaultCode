@@ -24,7 +24,7 @@ jobs:
       - name: Generate random commit count
         id: random
         run: |
-          MIN=9
+          MIN=5
           MAX=15
           COUNT=$((RANDOM % (MAX - MIN + 1) + MIN))
           echo "count=$COUNT" >> $GITHUB_OUTPUT
